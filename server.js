@@ -19,7 +19,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/exercise/new-user', function(req, res) {
-  if (!req.query.username) res.text();
+  if (!req.query.username) {
+    res.text("Path username is required.");
+    return;
+  }
+  let data = {username: req.query.username};
+  data._id = "".join("abcdefghij".map(_ => chars[~~()]));
   res.json('');
 });
 
