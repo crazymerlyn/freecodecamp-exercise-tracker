@@ -42,6 +42,7 @@ app.get('/api/exercise/log', function(req, res) {
       res.send(err);
       return;
     }
+    let data = {username: user.username, _id: user._id};
     res.json(user);
   });
 });
