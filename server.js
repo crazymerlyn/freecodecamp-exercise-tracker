@@ -19,7 +19,8 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/exercise/new-user', function(req, res) {
-  res.sendJSON(__dirname + '/views/index.html');
+  if (!req.query.username) res.text();
+  res.json('');
 });
 
 
