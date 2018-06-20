@@ -32,6 +32,20 @@ app.post('/api/exercise/new-user', function(req, res) {
   res.json(user);
 });
 
+app.get('/api/exercise/log', function(req, res) {
+  if (!req.query.userId) {
+    res.send("Path userId required");
+    return;
+  }
+  User.findOne({_id: req.query.userId}, function(err, user) {
+    if (err) {
+      res.send(err);
+      return;
+    }
+    res.json(user);
+  });
+});
+
 app.get('/api/exercise/users', function(req, res) {
   User.find({}, function(err, users) {
     if (err) {
