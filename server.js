@@ -6,6 +6,8 @@ const cors = require('cors')
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+const ObjectID = require('mongodb').ObjectID;
+const conn = mongoose.connection;
 
 app.use(cors())
 
@@ -19,15 +21,18 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/exercise/new-user', function(req, res) {
-  if (!req.query.username) {
-    res.text("Path username is required.");
+  if (!req.body.username) {
+    res.send("Path username is required.");
     return;
   }
-  let data = {username: req.query.username};
-  data._id = "".join("abcdefghij".map(_ => chars[~~()]));
-  res.json('');
+  let user = {username: req.body.username, _id: new ObjectID()};
+  conn.collection('users').insert(user);
+  res.json(user);
 });
 
+app.get('/api/exercise/users', function(req, res) {
+  res.json(conn.collection('users').get());
+});
 
 // Not found middleware
 app.use((req, res, next) => {
