@@ -8,6 +8,8 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 const ObjectID = require('mongodb').ObjectID;
 const conn = mongoose.connection;
+const schema = new mongoose.Schema({username: 'string', _id: 'string', exercises: 'object'});
+const User = mongoose.model('User', schema);
 
 app.use(cors())
 
@@ -31,7 +33,13 @@ app.post('/api/exercise/new-user', function(req, res) {
 });
 
 app.get('/api/exercise/users', function(req, res) {
-  res.json(conn.collection('users').get());
+  User.find({}, function(err, users) {
+    if (err) {
+      res.send(err);
+      return;
+    }
+    res.json(users);
+  });
 });
 
 // Not found middleware
