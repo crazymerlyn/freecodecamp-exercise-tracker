@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 const ObjectID = require('mongodb').ObjectID;
 const conn = mongoose.connection;
-const schema = new mongoose.Schema({username: 'string', _id: 'string', exercises: 'object'});
+const schema = new mongoose.Schema({exercises: [{description: String, duration: Integer, date: Date}], username: String});
 const User = mongoose.model('User', schema);
 
 app.use(cors())
@@ -37,20 +37,23 @@ app.post('/api/exercise/add', function(req, res) {
     res.send("Path userId required");
     return;
   }
-  User.findOne({_id: req.body.userId}, function(err, user) {
+  User.findById(req.body.userId, function(err, user) {
     if (err) {
       res.send(err);
       return;
     }
+    if (!user) { res.send("No user found"); return; }
     user.exercises = user.exercises || [];
-    let date = new Date(req.boy.date);
-    user.exercises.append({description: req.body.description, date: date, duration: req.body.duraction});
+    let date = new Date(req.body.date);
+    user.exercises.push({description: req.body.description, date: date, duration: req.body.duraction});
     user.save(function(err, user) {
       if (err) {
         res.send(err);
         return;
       }
       let data = {username: user.username, _id: user._id, description: req.body.description, date: date, duration: req.body.duration};
+      res.json(user);
+      return;
       res.json(data);
     });
   });
