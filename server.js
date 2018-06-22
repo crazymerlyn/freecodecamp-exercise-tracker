@@ -47,7 +47,9 @@ app.post('/api/exercise/add', function(req, res) {
     user.exercises.append({description: req.body.description, date: date, duration: req.body.duraction});
     user.save(function(err, user) {
       if (err) {
-        res.send
+        res.send(err);
+        return;
+      }
       let data = {username: user.username, _id: user._id, description: req.body.description, date: date, duration: req.body.duration};
       res.json(data);
     });
@@ -59,11 +61,12 @@ app.get('/api/exercise/log', function(req, res) {
     res.send("Path userId required");
     return;
   }
-  User.findOne({_id: req.query.userId}, function(err, user) {
+  User.findById(req.query.userId, function(err, user) {
     if (err) {
       res.send(err);
       return;
     }
+    if (!user) { res.send("No user found"); return; }
     let log = user.exercises || [];
     if (req.query.from) log = log.filter(x => x.date >= req.query.from);
     if (req.query.to) log = log.filter(x => x.date >= req.query.to);
