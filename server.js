@@ -32,6 +32,28 @@ app.post('/api/exercise/new-user', function(req, res) {
   res.json(user);
 });
 
+app.post('/api/exercise/add', function(req, res) {
+  if (!req.body.userId) {
+    res.send("Path userId required");
+    return;
+  }
+  User.findOne({_id: req.body.userId}, function(err, user) {
+    if (err) {
+      res.send(err);
+      return;
+    }
+    user.exercises = user.exercises || [];
+    let date = new Date(req.boy.date);
+    user.exercises.append({description: req.body.description, date: date, duration: req.body.duraction});
+    user.save(function(err, user) {
+      if (err) {
+        res.send
+      let data = {username: user.username, _id: user._id, description: req.body.description, date: date, duration: req.body.duration};
+      res.json(data);
+    });
+  });
+});
+
 app.get('/api/exercise/log', function(req, res) {
   if (!req.query.userId) {
     res.send("Path userId required");
@@ -42,6 +64,11 @@ app.get('/api/exercise/log', function(req, res) {
       res.send(err);
       return;
     }
+    let log = user.exercises || [];
+    if (req.query.from) log = log.filter(x => x.date >= req.query.from);
+    if (req.query.to) log = log.filter(x => x.date >= req.query.to);
+    if (req.query.limit) log = log.slice(0, req.query.limit);
+    log.forEach(x => x.date = new Date(x).toString());
     let data = {username: user.username, _id: user._id};
     res.json(user);
   });
